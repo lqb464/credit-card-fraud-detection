@@ -1,0 +1,110 @@
+# =============================================================================
+# Credit Card Fraud Detection — Pipeline Configuration
+# =============================================================================
+
+data:
+  train_path: "data/fraudTrain.csv"
+  test_path:  "data/fraudTest.csv"
+  target_col: "is_fraud"
+
+  # Stratified subsample for training (full test set always used)
+  train_sample_size: 200000    # ~200K keeps class ratio; full=1.3M
+  smoke_train_size:  10000
+  smoke_test_size:   3000
+  random_state: 42
+
+  # Raw input fields from Sparkov dataset
+  raw_fields:
+    - "amt"
+    - "category"
+    - "gender"
+    - "state"
+    - "city_pop"
+    - "lat"
+    - "long"
+    - "merch_lat"
+    - "merch_long"
+    - "trans_date_trans_time"
+    - "dob"
+
+features:
+  # Engineered numeric features
+  numeric:
+    - "log_amt"
+    - "log_distance_km"
+    - "city_pop"
+    - "age"
+    - "hour"
+    - "day_of_week"
+    - "amt_to_pop_ratio"
+    - "is_night"
+    - "is_weekend"
+    - "log_city_pop"
+
+  # Engineered categorical features
+  categorical:
+    - "category"
+    - "gender"
+    - "state"
+
+models:
+  default_model: "hist_gradient_boosting"
+  random_state: 42
+
+  hist_gradient_boosting:
+    class_weight: "balanced"
+    learning_rate: 0.05
+    max_iter: 200
+    max_depth: 8
+    min_samples_leaf: 20
+    l2_regularization: 0.1
+
+  xgboost:
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    # scale_pos_weight set automatically from data
+    random_state: 42
+    n_jobs: -1
+    eval_metric: "aucpr"
+
+  lightgbm:
+    n_estimators: 300
+    max_depth: 6
+    learning_rate: 0.05
+    subsample: 0.8
+    colsample_bytree: 0.8
+    is_unbalance: true
+    random_state: 42
+    n_jobs: -1
+    verbose: -1
+
+  logistic_regression:
+    C: 0.1
+    class_weight: "balanced"
+    max_iter: 500
+    solver: "lbfgs"
+    random_state: 42
+
+evaluation:
+  # Primary metric for fraud: F2 (Recall weighted 2x)
+  threshold_method: "f2"        # f1 | f2 | precision | recall | cost
+  beta: 2.0                     # fbeta beta parameter
+  fixed_threshold: 0.5
+  cv_folds: 3
+  cv_scoring: "average_precision"
+  cv_sample_size: 30000
+
+  # Cost matrix for cost-sensitive threshold optimization
+  cost_fp: 10.0     # $ cost per false alarm (manual review)
+  cost_fn: 500.0    # $ cost per missed fraud
+
+mlflow:
+  tracking_uri: "sqlite:///experiments/mlruns.db"
+  experiment_name: "credit-card-fraud-detection"
+
+outputs:
+  models_dir: "outputs/models"
+  reports_dir: "outputs/reports"

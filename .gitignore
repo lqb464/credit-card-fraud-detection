@@ -1,0 +1,53 @@
+# ─── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ─── Virtual Environments ────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+.env/
+
+# ─── Jupyter ─────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ─── Data ────────────────────────────────────────────────────────────────────
+# Keep data/ tracked; ignore large files if needed
+data/*.csv
+
+# ─── Outputs ─────────────────────────────────────────────────────────────────
+outputs/models/
+outputs/reports/
+!outputs/.gitkeep
+
+# ─── MLflow ──────────────────────────────────────────────────────────────────
+experiments/mlruns.db
+experiments/mlruns/
+mlruns/
+
+# ─── Testing ─────────────────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# ─── IDE ─────────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# ─── Misc ────────────────────────────────────────────────────────────────────
+*.log
+*.tmp
+.env
